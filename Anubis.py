@@ -14,6 +14,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from pathlib import Path
 
+from FastRun import FastRun
+
 def serial_ports():
     """ Lists serial port names
         :raises EnvironmentError:
@@ -282,6 +284,9 @@ class UI(QMainWindow):
         RunAction = QAction("Run", self)
         RunAction.triggered.connect(self.Run)
         Run.addAction(RunAction)
+        FastRunAction = QAction("Fast Run", self)
+        FastRunAction.triggered.connect(self.FunctionFastRun)
+        Run.addAction(FastRunAction)
 
         # Making and adding File Features
         Save_Action = QAction("Save", self)
@@ -325,6 +330,16 @@ class UI(QMainWindow):
         else:
             text2.append("Please Select Your Port Number First")
 
+    def FunctionFastRun(self):
+        lines = text.toPlainText().splitlines() # get each line as an element in the array
+        firstLine = lines[0].strip() # get the first line
+        functionPrototype = firstLine.split('def')[-1].strip() # split over the 'def' keyword and get the function prototype
+        paramsDeclaration = functionPrototype[functionPrototype.find('(') + 1: functionPrototype.find(')')] # gets the prameters (text between parentheses)
+        params = [param.strip() for param in paramsDeclaration.split(',')] # get each param as an element in the array
+        fastRun = FastRun(lines[1:], params) # pass the lines (except the first one) to be executed
+        fastRun.createFastRunFile() # create file to execute the code
+        text2.clear()
+        text2.append(functionPrototype)
 
     # this function is made to get which port was selected by the user
     @QtCore.pyqtSlot()
