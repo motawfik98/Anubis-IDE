@@ -15,6 +15,7 @@ from PyQt5.QtCore import *
 from pathlib import Path
 
 from FastRun import FastRun
+import os
 
 def serial_ports():
     """ Lists serial port names
@@ -338,8 +339,13 @@ class UI(QMainWindow):
         params = [param.strip() for param in paramsDeclaration.split(',')] # get each param as an element in the array
         fastRun = FastRun(lines[1:], params) # pass the lines (except the first one) to be executed
         fastRun.createFastRunFile() # create file to execute the code
+        
+        file = open('output.log', 'r') # read the output that was produced
+        contents = file.read()
+        file.close()
+        # os.remove("output.log") # delete the output file
         text2.clear()
-        text2.append(functionPrototype)
+        text2.append(contents) # add output contents to the text field
 
     # this function is made to get which port was selected by the user
     @QtCore.pyqtSlot()
